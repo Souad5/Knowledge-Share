@@ -34,51 +34,52 @@ export default function PostArticle() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!form.title || !form.content || !form.category) {
-      return Swal.fire("Error", "Please fill in all required fields.", "warning");
+  if (!form.title || !form.content || !form.category) {
+    return Swal.fire("Error", "Please fill in all required fields.", "warning");
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return Swal.fire("Error", "You must be logged in to post an article.", "error");
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/articles", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(form),
+    });
+
+    if (res.status === 401) {
+      Swal.fire("Session expired", "Please log in again.", "warning");
+      return navigate("/login");
     }
 
-    const article = {
-      title: form.title,
-      content: form.content,
-      category: form.category,
-      tags: form.tags ? form.tags.split(',').map(tag => tag.trim()) : [],
-      thumbnailUrl: form.thumbnailUrl,
-      date: form.date,
-    };
+    const data = await res.json();
 
-    try {
-      const res = await fetch("http://localhost:5000/api/articles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(article),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        return Swal.fire("Error", errorData.message || "Failed to post article", "error");
-      }
-
-      await res.json();
-
-      Swal.fire({
-        title: "Success!",
-        text: "Article posted successfully",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-
-      navigate("/my-articles");
-    } catch (err) {
-      Swal.fire("Error", err.message || "Network error", "error");
+    if (!res.ok) {
+      return Swal.fire("Error", data.message || "Failed to post article", "error");
     }
-  };
+
+    Swal.fire({
+      title: "Success!",
+      text: "Article posted successfully",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+    navigate("/my-articles");
+  } catch (err) {
+    Swal.fire("Error", err.message || "Network error", "error");
+  }
+};
+
 
   if (loading) {
     return (

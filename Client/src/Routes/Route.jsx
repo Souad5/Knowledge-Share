@@ -11,6 +11,7 @@ import MyArticles from "../Components/MyArticles";
 import PostArticle from "../Components/PostArticle";
 import ArticleDetails from './../Components/ArticleDetails';
 import PrivateRoute from "../Components/PrivateRoute";
+import Blogs from "../Components/Blogs";
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
       {
         path:"post",
         element:<PostArticle/>
+      },
+      {
+        path:"/blogs",
+        element:<Blogs/>
       }
     ]
   },

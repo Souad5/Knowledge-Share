@@ -110,6 +110,19 @@ app.get('/api/articles', async (req, res) => {
   }
 });
 
+// Featured
+app.get("/api/articles/featured", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 0;
+  const articles = await articlesCollection
+    .find()
+    .limit(limit) // <-- this is what makes `limit` work
+    .toArray();
+  res.send(articles);
+});
+
+// Get all unique categories from articles
+
+
 // Get articles by category
 app.get('/api/articles/category/:category', async (req, res) => {
   const category = req.params.category;
@@ -166,26 +179,36 @@ app.post('/api/articles', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Title, content, and category are required' });
     }
 
+    const userEmail = req.user?.email || 'unknown@example.com'; // fallback
     const article = {
       title,
       content,
       category,
-      tags: typeof tags === 'string' ? tags.split(',').map(tag => tag.trim()) : Array.isArray(tags) ? tags : [],
+      tags: typeof tags === 'string' 
+        ? tags.split(',').map(tag => tag.trim()).filter(Boolean) 
+        : Array.isArray(tags) 
+          ? tags 
+          : [],
       thumbnailUrl: thumbnailUrl || '',
       date: date ? new Date(date) : new Date(),
       authorId: new ObjectId(req.userId),
-      userEmail: req.user.email,
+      userEmail,
       likes: [],
       createdAt: new Date(),
     };
 
     const result = await articlesCollection.insertOne(article);
-    res.status(201).json({ message: 'Article created', articleId: result.insertedId });
+
+    res.status(201).json({
+      message: 'Article created',
+      article: { ...article, _id: result.insertedId }
+    });
   } catch (error) {
     console.error('Error posting article:', error);
     res.status(500).json({ message: 'Failed to post article' });
   }
 });
+
 
 // Like/Unlike Article (protected)
 app.post('/api/articles/:id/like', verifyToken, async (req, res) => {
