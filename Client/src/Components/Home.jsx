@@ -216,7 +216,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section>
+      <section >
         <h2 className="text-2xl font-semibold mb-6 text-center">
           What Our Users Say
         </h2>
@@ -256,7 +256,7 @@ const Home = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true }}
-        className="bg-blue-50 p-10 rounded-lg text-center"
+        className="bg-white p-5 rounded-lg text-center mb-5"
       >
         <h2 className="text-2xl font-bold mb-3">Subscribe to Our Newsletter</h2>
         <p className="text-gray-600 mb-6">
