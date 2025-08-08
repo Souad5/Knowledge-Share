@@ -50,7 +50,7 @@ export default function PostArticle() {
     };
 
     try {
-      const res = await fetch("https://server-three-red-77.vercel.app/api/articles", {
+      const res = await fetch("http://localhost:5000/api/articles", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -16,7 +16,7 @@ const MyArticles = () => {
   const fetchMyArticles = async () => {
     try {
       // Changed endpoint to /api/my-articles
-      const res = await axios.get("https://server-three-red-77.vercel.app/api/articles", {
+      const res = await axios.get("http://localhost:5000/api/articles", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setArticles(res.data);
@@ -36,7 +36,7 @@ const MyArticles = () => {
     if (!confirm.isConfirmed) return;
 
     try {
-      await axios.delete(`https://server-three-red-77.vercel.app/api/articles/${id}`, {
+      await axios.delete(`http://localhost:5000/api/articles/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchMyArticles();
@@ -63,7 +63,7 @@ const MyArticles = () => {
 
     try {
       await axios.put(
-        `https://server-three-red-77.vercel.app/api/articles/${_id}`,
+        `http://localhost:5000/api/articles/${_id}`,
         {
           title,
           content,

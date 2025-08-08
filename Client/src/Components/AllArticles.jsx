@@ -23,7 +23,7 @@ const AllArticles = () => {
       const query = selectedCategory
         ? `?category=${encodeURIComponent(selectedCategory)}`
         : "";
-      const res = await fetch(`https://server-three-red-77.vercel.app/api/articles${query}`);
+      const res = await fetch(`http://localhost:5000/api/articles${query}`);
       const data = await res.json();
       setArticles(data);
     } catch (err) {

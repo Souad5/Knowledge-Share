@@ -14,7 +14,7 @@ const ArticleDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`https://server-three-red-77.vercel.app/api/articles/${id}`)
+    fetch(`http://localhost:5000/api/articles/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setArticle(data);
@@ -22,7 +22,7 @@ const ArticleDetails = () => {
         setLoading(false);
       });
 
-    fetch(`https://server-three-red-77.vercel.app/api/articles/${id}/comments`)
+    fetch(`http://localhost:5000/api/articles/${id}/comments`)
       .then((res) => res.json())
       .then(setComments);
   }, [id]);
@@ -30,7 +30,7 @@ const ArticleDetails = () => {
   const handleLike = async () => {
     if (!user) return toast.error("Login required to like!");
 
-    const res = await fetch(`https://server-three-red-77.vercel.app/api/articles/${id}/like`, {
+    const res = await fetch(`http://localhost:5000/api/articles/${id}/like`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userEmail: user.email }),
@@ -43,7 +43,7 @@ const ArticleDetails = () => {
     e.preventDefault();
     if (!user) return toast.error("Login required to comment!");
 
-    const res = await fetch(`https://server-three-red-77.vercel.app/api/articles/${id}/comments`, {
+    const res = await fetch(`http://localhost:5000/api/articles/${id}/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -58,7 +58,7 @@ const ArticleDetails = () => {
       const newComment = await res.json();
       toast.success("Comment added");
       setCommentText("");
-      fetch(`https://server-three-red-77.vercel.app/api/articles/${id}/comments`)
+      fetch(`http://localhost:5000/api/articles/${id}/comments`)
         .then((res) => res.json())
         .then(setComments);
     }

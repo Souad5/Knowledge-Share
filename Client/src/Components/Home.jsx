@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router"; // FIXED import
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
@@ -7,15 +7,15 @@ const Home = () => {
   const [topContributors, setTopContributors] = useState([]);
 
   useEffect(() => {
-    fetch("https://server-three-red-77.vercel.app/api/articles?limit=6")
+    fetch("http://localhost:5000/api/articles?limit=6")
       .then((res) => res.json())
       .then((data) => setFeaturedArticles(data));
 
-    fetch("https://server-three-red-77.vercel.app/api/categories")
+    fetch("http://localhost:5000/api/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data));
 
-    fetch("https://server-three-red-77.vercel.app/api/top-contributors")
+    fetch("http://localhost:5000/api/top-contributors")
       .then((res) => res.json())
       .then((data) => setTopContributors(data));
   }, []);
@@ -65,8 +65,6 @@ const Home = () => {
               className=" h-[350px]"
             />
           </div>
-          
-          
         </div>
       </section>
       {/* Featured Articles */}

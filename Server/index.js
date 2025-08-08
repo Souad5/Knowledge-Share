@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret';
+const JWT_SECRET = process.env.JWT_SECRET || '0d1f6d56cefaf23b7ddf3fa9b72ac76a';
 
 // Middleware
 app.use(cors());
