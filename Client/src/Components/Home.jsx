@@ -124,7 +124,7 @@ const Home = () => {
                 className="border rounded-lg shadow hover:shadow-lg transition h-full flex flex-col bg-white"
               >
                 <img
-                  src={article.image}
+                  src={article.thumbnailUrl}
                   alt={article.title}
                   className="h-48 w-full object-cover"
                 />

@@ -43,16 +43,19 @@ const ArticleDetails = () => {
     e.preventDefault();
     if (!user) return toast.error("Login required to comment!");
 
-    const res = await fetch(`http://localhost:5000/api/articles/${id}/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userName: user.displayName,
-        userEmail: user.email,
-        userPhoto: user.photoURL,
-        comment: commentText,
-      }),
-    });
+    const res = await fetch(
+      `http://localhost:5000/api/articles/${id}/comments`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userName: user.displayName,
+          userEmail: user.email,
+          userPhoto: user.photoURL,
+          comment: commentText,
+        }),
+      }
+    );
 
     if (res.ok) {
       const newComment = await res.json();
@@ -64,18 +67,32 @@ const ArticleDetails = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10"><span className="loading loading-spinner loading-lg"></span></div>;
-  if (!article) return <div className="text-center text-red-500">Article not found.</div>;
+  if (loading)
+    return (
+      <div className="text-center py-10">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  if (!article)
+    return <div className="text-center text-red-500">Article not found.</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <h2 className="text-4xl font-bold">{article.title}</h2>
+      <img
+        className="w-[650px] h-[350px] rounded"
+        src={article.thumbnailUrl}
+      ></img>
       <div className="text-gray-500 text-sm">
         Published: {new Date(article.date).toLocaleDateString()}
       </div>
       <div className="flex items-center gap-4 mt-2">
         {article.authorPhoto && (
-          <img src={article.authorPhoto} alt="Author" className="w-10 h-10 rounded-full" />
+          <img
+            src={article.authorPhoto}
+            alt="Author"
+            className="w-10 h-10 rounded-full"
+          />
         )}
         <div>
           <div className="font-medium">{article.authorName}</div>
@@ -87,7 +104,9 @@ const ArticleDetails = () => {
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {article.tags?.map((tag, i) => (
-          <span key={i} className="badge badge-secondary">{tag}</span>
+          <span key={i} className="badge badge-secondary">
+            {tag}
+          </span>
         ))}
       </div>
 
@@ -109,7 +128,9 @@ const ArticleDetails = () => {
             onChange={(e) => setCommentText(e.target.value)}
             required
           />
-          <button type="submit" className="btn btn-primary">Post Comment</button>
+          <button type="submit" className="btn btn-primary">
+            Post Comment
+          </button>
         </form>
       )}
 
