@@ -84,7 +84,7 @@ This platform allows users to:
 
 ### 🔧 Client
 ```bash
-git clone https://github.com/yourusername/knowledge-platform-client.git
+git clone https://github.com/Souad5/Knowledge-Share.git
 cd knowledge-platform-client
 npm install
 npm run dev
