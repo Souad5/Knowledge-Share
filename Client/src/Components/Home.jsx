@@ -33,13 +33,14 @@ const Home = () => {
       .catch(() => setFeaturedArticles([]));
 
     // Categories
-    fetch("http://localhost:5000/api/articles/categories")
+    fetch("http://localhost:5000/api/category/home")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
           setCategories(data);
         } else if (Array.isArray(data.data)) {
           setCategories(data.data);
+          console.log(data.data);
         } else {
           setCategories([]);
         }
@@ -70,7 +71,7 @@ const Home = () => {
         animate="show"
         className="text-center bg-blue-100 p-10 rounded-xl"
       >
-        <h1 className="text-4xl font-bold mb-3">Share Your Knowledge</h1>
+        <h1 className="text-4xl font-bold mb-3 text-black">Share Your Knowledge</h1>
         <p className="text-lg text-gray-600 mb-5">
           Discover, read, and share insightful articles from passionate contributors.
         </p>
@@ -129,7 +130,7 @@ const Home = () => {
                   className="h-48 w-full object-cover"
                 />
                 <div className="p-4 flex flex-col flex-grow">
-                  <h3 className="text-lg font-semibold mb-1">{article.title}</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-black">{article.title}</h3>
                   <p className="text-gray-500 text-sm mb-2">
                     Category: {article.category}
                   </p>
@@ -171,7 +172,7 @@ const Home = () => {
                 }}
                 className="bg-gray-100 p-6 rounded-lg shadow hover:bg-gray-200 transition text-center"
               >
-                <h3 className="text-lg font-bold">{cat.name}</h3>
+                <h3 className="text-lg font-bold text-black">{cat.name}</h3>
                 <p className="text-sm text-gray-600 mt-1">{cat.count} Articles</p>
               </motion.div>
             ))}
@@ -258,7 +259,7 @@ const Home = () => {
         viewport={{ once: true }}
         className="bg-white p-5 rounded-lg text-center mb-5"
       >
-        <h2 className="text-2xl font-bold mb-3">Subscribe to Our Newsletter</h2>
+        <h2 className="text-2xl font-bold mb-3 text-black">Subscribe to Our Newsletter</h2>
         <p className="text-gray-600 mb-6">
           Get the latest articles and updates directly in your inbox.
         </p>
@@ -266,7 +267,7 @@ const Home = () => {
           <input
             type="email"
             placeholder="Enter your email"
-            className="border px-4 py-2 rounded-md flex-grow"
+            className="border px-4 py-2 rounded-md flex-grow border-black text-black"
           />
           <button
             type="submit"

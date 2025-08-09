@@ -120,17 +120,73 @@ app.get("/api/articles/featured", async (req, res) => {
   res.send(articles);
 });
 
+
+
 // Get all unique categories from articles
+app.get("/api/category/home", async (req, res) => {
+  try {
+    const categories = await articlesCollection.aggregate([
+      {
+        $group: {
+          _id: "$category",     // Group by category name
+          count: { $sum: 1 }    // Count how many articles per category
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          count: 1
+        }
+      },
+      { $sort: { count: -1 } }  // Optional: sort by most articles
+    ]).toArray();
+
+    res.json(categories);
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+    res.status(500).json({ message: "Failed to fetch categories" });
+  }
+});
 
 
-// Get articles by category
-app.get('/api/articles/category/:category', async (req, res) => {
-  const category = req.params.category;
-  const articles = await articlesCollection
-    .find({ category })
-    .sort({ createdAt: -1 })
-    .toArray();
-  res.json(articles);
+// Get top contributors by number of articles
+app.get("/api/top-contributors", async (req, res) => {
+  try {
+    const contributors = await articlesCollection.aggregate([
+      {
+        $group: {
+          _id: "$userEmail",            // Group by author email
+          totalArticles: { $sum: 1 },   // Count articles
+          lastArticleDate: { $max: "$createdAt" }
+        }
+      },
+      { $sort: { totalArticles: -1 } }, // Sort by most articles
+      { $limit: 10 },                   // Top 10 contributors
+      {
+        $lookup: {
+          from: "Knowledge",             // Users collection
+          localField: "_id",             // userEmail in articles
+          foreignField: "email",         // email in users
+          as: "userInfo"
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          email: "$_id",
+          totalArticles: 1,
+          lastArticleDate: 1,
+          name: { $arrayElemAt: ["$userInfo.name", 0] }
+        }
+      }
+    ]).toArray();
+
+    res.json(contributors);
+  } catch (err) {
+    console.error("Error fetching top contributors:", err);
+    res.status(500).json({ message: "Failed to fetch contributors" });
+  }
 });
 
 // Get single article (details only)

@@ -91,7 +91,7 @@ const AllArticles = () => {
               className="bg-white shadow rounded p-4 flex flex-col justify-between h-full"
             >
               <div>
-                <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                <h3 className="text-xl font-semibold mb-2 line-clamp-2 text-black">
                   {article.title}
                 </h3>
                 <p className="text-sm text-gray-500 mb-1">

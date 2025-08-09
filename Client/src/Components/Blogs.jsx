@@ -118,7 +118,7 @@ const Blogs = () => {
               />
             </div>
             <div className="p-5 flex flex-col flex-grow">
-              <h2 className="text-xl font-bold mb-2 hover:text-primary cursor-pointer transition-colors">
+              <h2 className="text-xl font-bold mb-2 hover:text-primary cursor-pointer transition-colors text-black">
                 {blog.title}
               </h2>
               <p className="text-sm text-gray-500 mb-3">

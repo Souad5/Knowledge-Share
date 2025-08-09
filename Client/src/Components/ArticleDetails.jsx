@@ -59,6 +59,7 @@ const ArticleDetails = () => {
 
     if (res.ok) {
       const newComment = await res.json();
+      
       toast.success("Comment added");
       setCommentText("");
       fetch(`http://localhost:5000/api/articles/${id}/comments`)
