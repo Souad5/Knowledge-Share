@@ -15,7 +15,7 @@ const MyArticles = () => {
 
   const fetchMyArticles = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/articles", {
+      const res = await axios.get("https://assignment-11-black.vercel.app/api/articles", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setArticles(res.data);
@@ -28,30 +28,30 @@ const MyArticles = () => {
     const confirm = await Swal.fire({
       icon: "warning",
       title: "Are you sure?",
-      text: "You want to delete this article.",
+      text: "This article will be permanently deleted.",
       showCancelButton: true,
+      confirmButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
     if (!confirm.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/articles/${id}`, {
+      await axios.delete(`https://assignment-11-black.vercel.app/api/articles/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchMyArticles();
       Swal.fire({
         icon: "success",
         title: "Deleted!",
-        text: "Article deleted successfully",
+        text: "Your article has been removed.",
         timer: 1500,
         showConfirmButton: false,
       });
     } catch (err) {
-      console.error(err);
       Swal.fire({
         icon: "error",
         title: "Error!",
-        text: "Failed to delete article.",
+        text: "Failed to delete the article.",
       });
     }
   };
@@ -63,7 +63,7 @@ const MyArticles = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/articles/${_id}`,
+        `https://assignment-11-black.vercel.app/api/articles/${_id}`,
         {
           title,
           content,
@@ -72,21 +72,18 @@ const MyArticles = () => {
           thumbnailUrl,
           date,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       Swal.fire({
         icon: "success",
         title: "Updated!",
-        text: "Article updated successfully",
+        text: "Article updated successfully.",
         timer: 1500,
         showConfirmButton: false,
       });
       setEditingArticle(null);
       fetchMyArticles();
     } catch (err) {
-      console.error(err);
       Swal.fire({
         icon: "error",
         title: "Error!",
@@ -108,57 +105,76 @@ const MyArticles = () => {
         <span className="loading loading-spinner loading-xl"></span>
       </p>
     );
+
   if (!user) return <Navigate to="/login" replace />;
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4 text-center">My Articles</h2>
-      {articles.length === 0 ? (
-        <p className="text-center">No articles found.</p>
-      ) : (
-        <table className="w-full border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2 text-black">Title</th>
-              <th className="border p-2 text-black">Category</th>
-              <th className="border p-2 text-black">Date</th>
-              <th className="border p-2 text-black">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {articles.map((article) => (
-              <tr key={article._id}>
-                <td className="border p-2">{article.title}</td>
-                <td className="border p-2">{article.category}</td>
-                <td className="border p-2">
-                  {article.date?.slice(0, 10)}
-                </td>
-                <td className="border p-2">
-                  <button
-                    className="btn btn-sm btn-primary mr-2"
-                    onClick={() => openEditModal(article)}
-                  >
-                    Update
-                  </button>
-                  <button
-                    className="btn btn-sm btn-error"
-                    onClick={() => handleDelete(article._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div className="min-h-screen  transition-colors duration-300 p-6">
+      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl p-6 transition-all duration-300">
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-gray-100">
+          My Articles
+        </h2>
 
-      {/* Replacement for <dialog> modal */}
+        {articles.length === 0 ? (
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            No articles found.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table w-full border border-gray-200 dark:border-gray-700 rounded-lg">
+              <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <tr>
+                  <th className="p-3 text-left">Title</th>
+                  <th className="p-3 text-left">Category</th>
+                  <th className="p-3 text-left">Date</th>
+                  <th className="p-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {articles.map((article) => (
+                  <tr
+                    key={article._id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                  >
+                    <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
+                      {article.title}
+                    </td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                      {article.category}
+                    </td>
+                    <td className="p-3 text-gray-600 dark:text-gray-400">
+                      {article.date?.slice(0, 10)}
+                    </td>
+                    <td className="p-3 flex justify-center gap-2">
+                      <button
+                        onClick={() => openEditModal(article)}
+                        className="px-4 py-1.5 rounded-lg text-sm bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(article._id)}
+                        className="px-4 py-1.5 rounded-lg text-sm bg-red-500 hover:bg-red-600 text-white transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Edit Modal */}
       {editingArticle && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg animate__animated animate__fadeIn">
-            <h3 className="text-lg font-bold mb-4">Edit Article</h3>
-            <form onSubmit={handleUpdateSubmit} className="space-y-3">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-6 w-full max-w-lg animate__animated animate__fadeIn">
+            <h3 className="text-xl font-semibold mb-4 text-center text-indigo-600 dark:text-indigo-400">
+              Edit Article
+            </h3>
+            <form onSubmit={handleUpdateSubmit} className="space-y-4">
               <input
                 type="text"
                 value={editingArticle.title}
@@ -169,7 +185,7 @@ const MyArticles = () => {
                   })
                 }
                 placeholder="Title"
-                className="w-full border p-2 rounded"
+                className="input input-bordered w-full dark:bg-gray-800 dark:border-gray-700"
               />
               <textarea
                 value={editingArticle.content}
@@ -180,7 +196,7 @@ const MyArticles = () => {
                   })
                 }
                 placeholder="Content"
-                className="w-full border p-2 rounded"
+                className="textarea textarea-bordered w-full dark:bg-gray-800 dark:border-gray-700"
               />
               <input
                 type="text"
@@ -192,7 +208,7 @@ const MyArticles = () => {
                   })
                 }
                 placeholder="Category"
-                className="w-full border p-2 rounded"
+                className="input input-bordered w-full dark:bg-gray-800 dark:border-gray-700"
               />
               <input
                 type="text"
@@ -204,7 +220,7 @@ const MyArticles = () => {
                   })
                 }
                 placeholder="Tags (comma separated)"
-                className="w-full border p-2 rounded"
+                className="input input-bordered w-full dark:bg-gray-800 dark:border-gray-700"
               />
               <input
                 type="text"
@@ -216,7 +232,7 @@ const MyArticles = () => {
                   })
                 }
                 placeholder="Thumbnail URL"
-                className="w-full border p-2 rounded"
+                className="input input-bordered w-full dark:bg-gray-800 dark:border-gray-700"
               />
               <input
                 type="date"
@@ -227,17 +243,20 @@ const MyArticles = () => {
                     date: e.target.value,
                   })
                 }
-                className="w-full border p-2 rounded"
+                className="input input-bordered w-full dark:bg-gray-800 dark:border-gray-700"
               />
-              <div className="flex justify-end gap-2 mt-4">
+              <div className="flex justify-end gap-3 mt-4">
                 <button
                   type="button"
                   onClick={() => setEditingArticle(null)}
-                  className="btn btn-accent"
+                  className="btn btn-outline dark:btn-neutral"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button
+                  type="submit"
+                  className="btn bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
                   Update
                 </button>
               </div>

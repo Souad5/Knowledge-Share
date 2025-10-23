@@ -6,7 +6,7 @@ const AllArticles = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [sortOrder, setSortOrder] = useState(""); // new state for sorting
+  const [sortOrder, setSortOrder] = useState("");
   const { user } = useContext(AuthContext);
 
   const categories = [
@@ -26,10 +26,11 @@ const AllArticles = () => {
       const query = selectedCategory
         ? `?category=${encodeURIComponent(selectedCategory)}`
         : "";
-      const res = await fetch(`http://localhost:5000/api/articles${query}`);
+      const res = await fetch(
+        `https://assignment-11-black.vercel.app/api/articles${query}`
+      );
       let data = await res.json();
 
-      // Apply sorting
       if (sortOrder === "asc") {
         data.sort((a, b) => new Date(a.date) - new Date(b.date));
       } else if (sortOrder === "desc") {
@@ -49,13 +50,15 @@ const AllArticles = () => {
   }, [selectedCategory, sortOrder]);
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      <h2 className="text-3xl font-bold mb-6 text-center">All Articles</h2>
+    <div className="max-w-7xl mx-auto px-6 py-10 transition-colors duration-300 dark:bg-gray-900 min-h-screen">
+      <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 ">
+        All Articles
+      </h2>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 justify-center mb-6">
+      <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
         <select
-          className="select select-bordered w-full max-w-xs"
+          className="select select-bordered w-full md:w-60 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -68,7 +71,7 @@ const AllArticles = () => {
         </select>
 
         <select
-          className="select select-bordered w-full max-w-xs"
+          className="select select-bordered w-full md:w-60 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         >
@@ -78,38 +81,38 @@ const AllArticles = () => {
         </select>
       </div>
 
-      {/* Loading spinner */}
+      {/* Loading */}
       {loading ? (
-        <div className="text-center py-10">
-          <span className="loading loading-spinner loading-xl"></span>
+        <div className="text-center py-16">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
         </div>
       ) : articles.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (
             <div
               key={article._id}
-              className="bg-white shadow rounded p-4 flex flex-col justify-between h-full"
+              className="bg-white dark:bg-gray-800 shadow-md hover:shadow-lg dark:shadow-gray-700 rounded-2xl p-6 flex flex-col justify-between h-full transition-all duration-300"
             >
               <div>
-                <h3 className="text-xl font-semibold mb-2 line-clamp-2 text-black">
+                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white line-clamp-2">
                   {article.title}
                 </h3>
-                <p className="text-sm text-gray-500 mb-1">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                   <span className="font-medium">Author:</span>{" "}
                   {user?.displayName || "Unknown"}
                 </p>
-                <p className="text-sm text-gray-500 mb-1">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                   <span className="font-medium">Category:</span>{" "}
                   {article.category}
                 </p>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                   <span className="font-medium">Published:</span>{" "}
                   {new Date(article.date).toLocaleDateString()}
                 </p>
               </div>
               <Link
                 to={`/articles/${article._id}`}
-                className="btn btn-sm btn-primary mt-auto"
+                className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-none mt-auto"
               >
                 Read More
               </Link>
@@ -117,7 +120,9 @@ const AllArticles = () => {
           ))}
         </div>
       ) : (
-        <p className="text-center">No articles found in this category.</p>
+        <p className="text-center text-gray-700 dark:text-gray-300 mt-10">
+          No articles found in this category.
+        </p>
       )}
     </div>
   );

@@ -50,7 +50,7 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("token", firebaseToken);
 
       // Fetch backend JWT using user email
-      const response = await axios.post("http://localhost:5000/jwt", { email: result.user.email });
+      const response = await axios.post("https://assignment-11-black.vercel.app/jwt", { email: result.user.email });
       if (response.data.token) {
         setToken(response.data.token);
         localStorage.setItem("token", response.data.token);
@@ -75,7 +75,7 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("token", firebaseToken);
 
       // Fetch backend JWT using user email
-      const response = await axios.post("http://localhost:5000/jwt", { email: result.user.email });
+      const response = await axios.post("https://assignment-11-black.vercel.app/jwt", { email: result.user.email });
       if (response.data.token) {
         setToken(response.data.token);
         localStorage.setItem("token", response.data.token);
@@ -113,7 +113,7 @@ const AuthProvider = ({ children }) => {
         setToken(token);
         localStorage.setItem("token", token);
         // Also fetch backend JWT
-        axios.post("http://localhost:5000/jwt", { email: currentUser.email })
+        axios.post("https://assignment-11-black.vercel.app/jwt", { email: currentUser.email })
           .then((response) => {
             if (response.data.token) {
               setToken(response.data.token);

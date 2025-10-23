@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await loginUser(email, password);
-      toast.success('Login successful');
+      toast.success('Welcome back!');
       navigate('/');
     } catch (error) {
       toast.error(`Login failed: ${error.message}`);
@@ -24,7 +24,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       await googleLogin();
-      toast.success('Google login successful');
+      toast.success('Signed in with Google!');
       navigate('/');
     } catch (error) {
       toast.error(`Google login failed: ${error.message}`);
@@ -32,14 +32,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="max-w-md w-full bg-white p-8 rounded shadow">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden ">
+      {/* Subtle geometric background */}
+      <div className="absolute inset-0 opacity-20"></div>
+
+      <div className="relative z-10 w-full max-w-md bg-white backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-gray-100">
+        <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">
+          Welcome Back
+        </h2>
+        <p className="text-center text-gray-500 mb-6">
+          Login to continue sharing your knowledge
+        </p>
+
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
-            placeholder="Email"
-            className="input input-bordered w-full"
+            placeholder="Email Address"
+            className="input input-bordered  w-full focus:border-indigo-500 focus:ring focus:ring-indigo-100"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -47,18 +56,42 @@ const Login = () => {
           <input
             type="password"
             placeholder="Password"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full focus:border-indigo-500 focus:ring focus:ring-indigo-100"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit" className="btn btn-primary w-full">Login</button>
+
+          <button
+            type="submit"
+            className="btn btn-primary w-full mt-2"
+          >
+            Sign In
+          </button>
         </form>
-        <button onClick={handleGoogleLogin} className="btn btn-outline w-full mt-4">
-          Sign in with Google
+
+        <div className="divider text-black my-6">or</div>
+
+        <button
+          onClick={handleGoogleLogin}
+          className="btn btn-outline w-full flex items-center text-black justify-center gap-2 hover:bg-gray-100"
+        >
+          <img
+            src="https://www.svgrepo.com/show/355037/google.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          Continue with Google
         </button>
-        <p className="mt-4 text-sm">
-          Don't have an account? <Link to="/register" className="text-blue-600">Register</Link>
+
+        <p className="mt-6 text-center text-gray-600 text-sm">
+          Don’t have an account?{' '}
+          <Link
+            to="/register"
+            className="text-indigo-600 hover:text-indigo-700 font-medium"
+          >
+            Register now
+          </Link>
         </p>
       </div>
     </div>

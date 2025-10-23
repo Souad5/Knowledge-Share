@@ -72,7 +72,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Login
+// Login - FIXED here: convert _id to string before signing JWT
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await usersCollection.findOne({ email });
@@ -81,7 +81,11 @@ app.post('/api/login', async (req, res) => {
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.status(401).json({ message: 'Wrong password' });
 
-  const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign(
+    { id: user._id.toString(), email: user.email, name: user.name }, // <-- FIX: toString()
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
   res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
 });
 
@@ -115,12 +119,10 @@ app.get("/api/articles/featured", async (req, res) => {
   const limit = parseInt(req.query.limit) || 0;
   const articles = await articlesCollection
     .find()
-    .limit(limit) // <-- this is what makes `limit` work
+    .limit(limit)
     .toArray();
   res.send(articles);
 });
-
-
 
 // Get all unique categories from articles
 app.get("/api/category/home", async (req, res) => {
@@ -128,8 +130,8 @@ app.get("/api/category/home", async (req, res) => {
     const categories = await articlesCollection.aggregate([
       {
         $group: {
-          _id: "$category",     // Group by category name
-          count: { $sum: 1 }    // Count how many articles per category
+          _id: "$category",
+          count: { $sum: 1 }
         }
       },
       {
@@ -139,7 +141,7 @@ app.get("/api/category/home", async (req, res) => {
           count: 1
         }
       },
-      { $sort: { count: -1 } }  // Optional: sort by most articles
+      { $sort: { count: -1 } }
     ]).toArray();
 
     res.json(categories);
@@ -149,25 +151,24 @@ app.get("/api/category/home", async (req, res) => {
   }
 });
 
-
 // Get top contributors by number of articles
 app.get("/api/top-contributors", async (req, res) => {
   try {
     const contributors = await articlesCollection.aggregate([
       {
         $group: {
-          _id: "$userEmail",            // Group by author email
-          totalArticles: { $sum: 1 },   // Count articles
+          _id: "$userEmail",
+          totalArticles: { $sum: 1 },
           lastArticleDate: { $max: "$createdAt" }
         }
       },
-      { $sort: { totalArticles: -1 } }, // Sort by most articles
-      { $limit: 10 },                   // Top 10 contributors
+      { $sort: { totalArticles: -1 } },
+      { $limit: 10 },
       {
         $lookup: {
-          from: "Knowledge",             // Users collection
-          localField: "_id",             // userEmail in articles
-          foreignField: "email",         // email in users
+          from: "Knowledge",
+          localField: "_id",
+          foreignField: "email",
           as: "userInfo"
         }
       },
@@ -189,19 +190,13 @@ app.get("/api/top-contributors", async (req, res) => {
   }
 });
 
-// Get single article (details only)
 app.get('/api/articles/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const article = await articlesCollection.findOne({ _id: new ObjectId(id) });
-    if (!article) return res.status(404).json({ message: 'Article not found' });
-    res.json(article);
-  } catch {
-    res.status(400).json({ message: 'Invalid article ID' });
-  }
+  const article = await articlesCollection.findOne({ _id: new ObjectId(req.params.id) });
+  if (!article) return res.status(404).json({ message: 'Article not found' });
+  res.json(article);
 });
 
-// Get comments for an article
+// Get comments for article
 app.get('/api/articles/:id/comments', async (req, res) => {
   const comments = await commentsCollection
     .find({ articleId: req.params.id })
@@ -210,20 +205,42 @@ app.get('/api/articles/:id/comments', async (req, res) => {
   res.json(comments);
 });
 
-// Post a comment (protected)
+// Like/unlike article
+app.post('/api/articles/:id/like', verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const userEmail = req.user.email;
+
+  const article = await articlesCollection.findOne({ _id: new ObjectId(id) });
+  if (!article) return res.status(404).json({ message: 'Article not found' });
+
+  const hasLiked = article.likes?.includes(userEmail);
+  const update = hasLiked
+    ? { $pull: { likes: userEmail } }
+    : { $addToSet: { likes: userEmail } };
+
+  await articlesCollection.updateOne({ _id: new ObjectId(id) }, update);
+
+  const updatedArticle = await articlesCollection.findOne({ _id: new ObjectId(id) });
+  res.json({ liked: !hasLiked, likes: updatedArticle.likes?.length || 0 });
+});
+
+// Post comment
 app.post('/api/articles/:id/comments', verifyToken, async (req, res) => {
-  const { userName, userEmail, userPhoto, comment } = req.body;
+  const { comment } = req.body;
   if (!comment) return res.status(400).json({ message: 'Comment required' });
+
   const newComment = {
     articleId: req.params.id,
-    userName: userName || req.user.name,
-    userEmail: userEmail || req.user.email,
-    userPhoto: userPhoto || '',
+    userName: req.user.name,
+    userEmail: req.user.email,
+    userPhoto: req.user.photoURL || '',
     comment,
-    date: new Date()
+    date: new Date(),
   };
+
   const result = await commentsCollection.insertOne(newComment);
-  res.json(result);
+  const insertedComment = await commentsCollection.findOne({ _id: result.insertedId });
+  res.json(insertedComment);
 });
 
 // Post Article (protected)
@@ -235,15 +252,15 @@ app.post('/api/articles', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Title, content, and category are required' });
     }
 
-    const userEmail = req.user?.email || 'unknown@example.com'; // fallback
+    const userEmail = req.user?.email || 'unknown@example.com';
     const article = {
       title,
       content,
       category,
-      tags: typeof tags === 'string' 
-        ? tags.split(',').map(tag => tag.trim()).filter(Boolean) 
-        : Array.isArray(tags) 
-          ? tags 
+      tags: typeof tags === 'string'
+        ? tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        : Array.isArray(tags)
+          ? tags
           : [],
       thumbnailUrl: thumbnailUrl || '',
       date: date ? new Date(date) : new Date(),
@@ -263,22 +280,6 @@ app.post('/api/articles', verifyToken, async (req, res) => {
     console.error('Error posting article:', error);
     res.status(500).json({ message: 'Failed to post article' });
   }
-});
-
-
-// Like/Unlike Article (protected)
-app.post('/api/articles/:id/like', verifyToken, async (req, res) => {
-  const id = req.params.id;
-  const userEmail = req.user.email;
-  const article = await articlesCollection.findOne({ _id: new ObjectId(id) });
-  if (!article) return res.status(404).json({ message: 'Not found' });
-
-  const hasLiked = article.likes?.includes(userEmail);
-  const update = hasLiked ? { $pull: { likes: userEmail } } : { $addToSet: { likes: userEmail } };
-
-  await articlesCollection.updateOne({ _id: new ObjectId(id) }, update);
-  const updated = await articlesCollection.findOne({ _id: new ObjectId(id) });
-  res.json({ liked: !hasLiked, likes: updated.likes?.length || 0 });
 });
 
 // Get user's articles (protected)
@@ -324,22 +325,6 @@ app.put("/api/articles/:id", verifyToken, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
-});
-
-// Post Comment (protected, generic endpoint)
-app.post('/api/comments', verifyToken, async (req, res) => {
-  const { articleId, content } = req.body;
-  if (!articleId || !content)
-    return res.status(400).json({ message: 'Article ID and content required' });
-
-  const comment = {
-    articleId,
-    content,
-    authorId: new ObjectId(req.userId),
-    createdAt: new Date(),
-  };
-  const result = await commentsCollection.insertOne(comment);
-  res.json(result);
 });
 
 app.listen(port, () => {

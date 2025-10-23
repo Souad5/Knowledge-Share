@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -83,6 +84,11 @@ const Blogs = () => {
 ;
     setBlogs(blogData);
   }, []);
+ 
+  const blogBtn = () => {
+    Swal.fire(`I am working on it for the details page. Stay tuned!`, '', 'info');
+
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -126,7 +132,7 @@ const Blogs = () => {
                 {new Date(blog.date).toLocaleDateString()}
               </p>
               <p className="text-gray-700 flex-grow line-clamp-3">{blog.content}</p>
-              <button className="btn btn-primary btn-sm mt-4 self-start">
+              <button onClick={()=>blogBtn()} className="btn btn-primary btn-sm mt-4 self-start">
                 Read More
               </button>
             </div>

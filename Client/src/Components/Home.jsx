@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
+import { AuthContext } from "../Context/AuthContext";
+import KnowledgeHub from "./home_sections/KnowledgeHub";
+import JoinCommunity from "./home_sections/JoinCommunity";
+import InsightsEvents from "./home_sections/InsightsEvents";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -19,7 +23,9 @@ const Home = () => {
 
   useEffect(() => {
     // Featured Articles
-    fetch("http://localhost:5000/api/articles/featured?limit=6")
+    fetch(
+      "https://assignment-11-black.vercel.app/api/articles/featured?limit=6"
+    )
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -33,7 +39,7 @@ const Home = () => {
       .catch(() => setFeaturedArticles([]));
 
     // Categories
-    fetch("http://localhost:5000/api/category/home")
+    fetch("https://assignment-11-black.vercel.app/api/category/home")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -48,7 +54,7 @@ const Home = () => {
       .catch(() => setCategories([]));
 
     // Top Contributors
-    fetch("http://localhost:5000/api/top-contributors")
+    fetch("https://assignment-11-black.vercel.app/api/top-contributors")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -62,6 +68,8 @@ const Home = () => {
       .catch(() => setTopContributors([]));
   }, []);
 
+  const { user } = useContext(AuthContext);
+
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-16">
       {/* Hero Section */}
@@ -71,9 +79,12 @@ const Home = () => {
         animate="show"
         className="text-center bg-blue-100 p-10 rounded-xl"
       >
-        <h1 className="text-4xl font-bold mb-3 text-black">Share Your Knowledge</h1>
+        <h1 className="text-4xl font-bold mb-3 text-black">
+          Share Your Knowledge
+        </h1>
         <p className="text-lg text-gray-600 mb-5">
-          Discover, read, and share insightful articles from passionate contributors.
+          Discover, read, and share insightful articles from passionate
+          contributors.
         </p>
         <Link
           to="/articles"
@@ -85,7 +96,6 @@ const Home = () => {
 
       {/* Slider */}
       <section>
-        <h1 className="text-center text-3xl font-bold pb-4">Slider</h1>
         <div className="carousel w-full rounded-lg ">
           {[
             "https://i.postimg.cc/qM4GtG2L/books-with-brain-digital-art-style-education-day.jpg",
@@ -130,18 +140,20 @@ const Home = () => {
                   className="h-48 w-full object-cover"
                 />
                 <div className="p-4 flex flex-col flex-grow">
-                  <h3 className="text-lg font-semibold mb-1 text-black">{article.title}</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-black">
+                    {article.title}
+                  </h3>
                   <p className="text-gray-500 text-sm mb-2">
                     Category: {article.category}
                   </p>
                   <p className="text-gray-700 text-sm flex-grow">
-                    {article.description?.slice(0, 80)}...
+                    {article.content?.slice(0, 80)}...
                   </p>
                   <Link
                     to={`/articles/${article._id}`}
                     className="text-blue-600 mt-3 inline-block"
                   >
-                    See More →
+                    <button className="btn btn-primary">See More →</button>
                   </Link>
                 </div>
               </motion.div>
@@ -173,7 +185,9 @@ const Home = () => {
                 className="bg-gray-100 p-6 rounded-lg shadow hover:bg-gray-200 transition text-center"
               >
                 <h3 className="text-lg font-bold text-black">{cat.name}</h3>
-                <p className="text-sm text-gray-600 mt-1">{cat.count} Articles</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {cat.count} Articles
+                </p>
               </motion.div>
             ))}
           </motion.div>
@@ -200,7 +214,7 @@ const Home = () => {
                 className="text-center p-4 border rounded-lg shadow hover:shadow-lg"
               >
                 <img
-                  src={contributor.photo || "https://i.ibb.co/SnGx7FN/user.png"}
+                  src={contributor.photo || user?.photoURL}
                   alt={contributor.name}
                   className="w-20 h-20 object-cover rounded-full mx-auto mb-3"
                 />
@@ -217,7 +231,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section >
+      <section>
         <h2 className="text-2xl font-semibold mb-6 text-center">
           What Our Users Say
         </h2>
@@ -245,12 +259,14 @@ const Home = () => {
               className="bg-white border p-6 rounded-lg shadow hover:shadow-lg"
             >
               <p className="italic text-gray-600 mb-4">"{review.text}"</p>
-              <h4 className="font-bold">{review.name}</h4>
+              <h4 className="font-bold text-black">{review.name}</h4>
             </motion.div>
           ))}
         </div>
       </section>
-
+      <KnowledgeHub />
+      <JoinCommunity />
+      <InsightsEvents />
       {/* Newsletter */}
       <motion.section
         variants={fadeUp}
@@ -259,7 +275,9 @@ const Home = () => {
         viewport={{ once: true }}
         className="bg-white p-5 rounded-lg text-center mb-5"
       >
-        <h2 className="text-2xl font-bold mb-3 text-black">Subscribe to Our Newsletter</h2>
+        <h2 className="text-2xl font-bold mb-3 text-black">
+          Subscribe to Our Newsletter
+        </h2>
         <p className="text-gray-600 mb-6">
           Get the latest articles and updates directly in your inbox.
         </p>
