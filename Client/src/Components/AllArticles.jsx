@@ -1,6 +1,8 @@
+// Super-Professional UI for AllArticles.jsx
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { AuthContext } from "../Context/AuthContext";
+import { Filter, ArrowUpDown, CalendarDays } from "lucide-react";
 
 const AllArticles = () => {
   const [articles, setArticles] = useState([]);
@@ -50,77 +52,93 @@ const AllArticles = () => {
   }, [selectedCategory, sortOrder]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 transition-colors duration-300 dark:bg-gray-900 min-h-screen">
-      <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 ">
-        All Articles
+    <div className="max-w-7xl mx-auto px-6 py-14 min-h-screen dark:bg-gray-900 transition-all duration-300">
+      {/* Title */}
+      <h2 className="text-4xl font-bold text-center mb-10  dark:text-white tracking-tight">
+        Explore All Articles
       </h2>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
-        <select
-          className="select select-bordered w-full md:w-60 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {categories.map((cat, i) => (
-            <option key={i} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+      <div className=" dark:bg-gray-800 shadow-md rounded-2xl p-6 mb-10 border border-gray-100 dark:border-gray-700">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-medium text-lg">
+            <Filter className="w-5 h-5" /> Filters
+          </div>
 
-        <select
-          className="select select-bordered w-full md:w-60 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-        >
-          <option value="">Sort by</option>
-          <option value="asc">Date: Oldest First</option>
-          <option value="desc">Date: Newest First</option>
-        </select>
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            {/* Category */}
+            <select
+              className="select select-bordered w-full md:w-56 dark:bg-gray-900 dark:border-gray-700 dark:text-white rounded-lg"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat, i) => (
+                <option key={i} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+
+            {/* Sort */}
+            <div className="relative w-full md:w-56">
+              <ArrowUpDown className="absolute left-3 top-3 w-5 h-5 text-gray-500" />
+              <select
+                className="select select-bordered w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-white rounded-lg"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="">Sort by Date</option>
+                <option value="asc">Oldest First</option>
+                <option value="desc">Newest First</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Loading */}
+      {/* Loading State */}
       {loading ? (
-        <div className="text-center py-16">
-          <span className="loading loading-spinner loading-lg text-primary"></span>
+        <div className="flex justify-center py-20">
+          <span className="loading loading-spinner loading-lg text-primary" />
         </div>
       ) : articles.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (
             <div
               key={article._id}
-              className="bg-white dark:bg-gray-800 shadow-md hover:shadow-lg dark:shadow-gray-700 rounded-2xl p-6 flex flex-col justify-between h-full transition-all duration-300"
+              className=" dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 group overflow-hidden"
             >
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white line-clamp-2">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold  dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                   {article.title}
                 </h3>
+
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
-                  <span className="font-medium">Author:</span>{" "}
-                  {user?.displayName || "Unknown"}
+                  <span className="font-medium">Author:</span> {user?.displayName || "Unknown"}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
-                  <span className="font-medium">Category:</span>{" "}
-                  {article.category}
+                  <span className="font-medium">Category:</span> {article.category}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  <span className="font-medium">Published:</span>{" "}
+                <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1 mt-2">
+                  <CalendarDays className="w-4 h-4" />
                   {new Date(article.date).toLocaleDateString()}
                 </p>
               </div>
-              <Link
-                to={`/articles/${article._id}`}
-                className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-none mt-auto"
-              >
-                Read More
-              </Link>
+
+              <div className="px-6 pb-6">
+                <Link
+                  to={`/articles/${article._id}`}
+                  className="block w-full text-center py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-300"
+                >
+                  Read More
+                </Link>
+              </div>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-700 dark:text-gray-300 mt-10">
+        <p className="text-center text-gray-600 dark:text-gray-300 mt-20 text-lg">
           No articles found in this category.
         </p>
       )}
